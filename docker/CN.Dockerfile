@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y tzdata && \
     pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple && \
     pip install /tmp/*.whl && \
     pip install -U "tg-signer[tgcrypto]"
+RUN pip install flask
 
 WORKDIR /opt/tg-signer
 COPY app.py /opt/tg-signer/
