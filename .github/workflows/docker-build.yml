@@ -20,7 +20,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build the Docker image
-        run: docker build -f CN.Dockerfile -t gvddfdf/tg-signer:latest .
+        run: docker build -f docker/CN.Dockerfile -t gvddfdf/tg-signer:latest docker/
 
       - name: Push the Docker image
         run: docker push gvddfdf/tg-signer:latest
