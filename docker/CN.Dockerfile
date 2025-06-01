@@ -29,3 +29,7 @@ RUN apt-get update && apt-get install -y tzdata && \
     pip install -U "tg-signer[tgcrypto]"
 
 WORKDIR /opt/tg-signer
+COPY app.py /opt/tg-signer/
+WORKDIR /opt/tg-signer
+EXPOSE 8080
+CMD ["python", "app.py"]
