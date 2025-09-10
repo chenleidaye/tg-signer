@@ -30,9 +30,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 
 # 拷贝 tgcrypto wheel 并安装
 COPY --from=builder /build/*.whl /tmp/
-RUN pip install /tmp/*.whl \
-    && pip install -U "tg-signer[tgcrypto]" \
-    && pip install flask gunicorn
+RUN pip install --no-cache-dir /tmp/*.whl \
+    && pip install --no-cache-dir tg-signer[tgcrypto] flask gunicorn
 
 # 工作目录
 WORKDIR /opt/tg-signer
@@ -41,5 +40,5 @@ COPY app.py /opt/tg-signer/
 # 暴露端口
 EXPOSE 8080
 
-# 使用 Gunicorn 启动生产级 Flask
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "app:app"]
+# Gunicorn 生产级启动，单 worker，防止 Zeabur 杀掉进程
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--timeout", "120", "--log-level", "info", "app:app"]
