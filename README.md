@@ -28,7 +28,7 @@ pip install "tg-signer[speedup]"
 
 #### Docker
 
-未上传直接使用的镜像，可以自行build镜像，见[docker](./docker) 目录下的Dockerfile和 [README](./docker/README.md) 。
+未上传直接使用的镜像，可以自行build镜像，见 [docker](./docker) 目录下的Dockerfile和 [README](./docker/README.md) 。
 
 ### 使用方法
 
@@ -364,6 +364,17 @@ tg-signer monitor run my_monitor
 
 
 ### 版本变动日志
+
+#### 0.7.6
+- fix: 监控多个聊天时消息转发至每个聊天 (#55)
+
+#### 0.7.5
+- 捕获并记录执行任务期间的所有RPC错误
+- bump kurigram version to 2.2.7
+
+#### 0.7.4
+- 执行多个action时，支持固定时间间隔
+- 通过`crontab`配置定时执行时不再限制每日执行一次
 
 #### 0.7.2
 - 支持将消息转发至外部端点，通过：

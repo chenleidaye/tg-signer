@@ -14,7 +14,7 @@ from typing import (
 )
 
 from pydantic import AnyHttpUrl, BaseModel, ValidationError
-from pyrogram.types import Message
+from pyrogram.types import Chat, Message
 from typing_extensions import Self, TypeAlias
 
 
@@ -48,7 +48,7 @@ def pad_text_to_width(text: str, target_width: int, align: str = "left") -> str:
 
 
 class BaseJSONConfig(BaseModel):
-    version: ClassVar[str] = 0
+    version: ClassVar[Union[str, int]] = 0
     olds: ClassVar[Optional[List[Type["BaseJSONConfig"]]]] = None
     is_current: ClassVar[bool] = False
 
@@ -74,6 +74,7 @@ class BaseJSONConfig(BaseModel):
         for old in cls.olds or []:
             if old_inst := old.valid(d):
                 return old.to_current(old_inst), True
+        return None
 
 
 class SignConfigV1(BaseJSONConfig):
@@ -229,12 +230,14 @@ class SignChatV3(BaseJSONConfig):
     name: Optional[str] = None
     delete_after: Optional[int] = None
     actions: List[ActionT]
+    action_interval: float = 1  # actions的间隔时间，单位秒
 
     def __repr__(self) -> str:
         return (
             f"SignChatV3(chat_id={self.chat_id}, "
             f"delete_after={self.delete_after}, "
-            f"actions=[{len(self.actions)} actions])"
+            f"actions=[{len(self.actions)} actions]),"
+            f"action_interval={self.action_interval}"
         )
 
     def __str__(self) -> str:
@@ -409,10 +412,16 @@ class MatchConfig(BaseJSONConfig):
         elif self.rule == "regex":
             flags = re.IGNORECASE if self.ignore_case else 0
             return bool(re.search(rule_value, text, flags=flags))
-        return False
+
+    def match_chat(self, chat: "Chat"):
+        if isinstance(self.chat_id, int):
+            return self.chat_id == chat.id
+        return self.chat_id == chat.username
 
     def match(self, message: "Message"):
-        return bool(self.match_user(message) and self.match_text(message.text))
+        return self.match_chat(message.chat) and bool(
+            self.match_user(message) and self.match_text(message.text)
+        )
 
     def get_send_text(self, text: str) -> str:
         send_text = self.default_send_text
