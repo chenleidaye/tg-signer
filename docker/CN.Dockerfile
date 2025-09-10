@@ -42,4 +42,4 @@ COPY app.py /opt/tg-signer/
 EXPOSE 8080
 
 # 使用 Gunicorn 启动生产级 Flask
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "4", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "app:app"]
